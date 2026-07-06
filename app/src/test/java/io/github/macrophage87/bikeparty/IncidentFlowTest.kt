@@ -17,6 +17,7 @@ import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 import org.robolectric.Shadows.shadowOf
+import org.robolectric.annotation.Config
 
 /**
  * Exercises the full report-incident flow (session state, JSON encode,
@@ -116,12 +117,15 @@ class IncidentFlowTest {
         shadowOf(Looper.getMainLooper()).idle()
     }
 
+    // SDK 31+ Location setters reject NaN, but parceled locations from real
+    // providers can still carry it — run on an SDK whose setters allow it.
+    @Config(sdk = [28])
     @Test
     fun locationWithNonFiniteSpeed_isSanitized_notCrashing() {
         startSession()
         RideSession.onOwnLocation(fix().apply {
             speed = Float.NaN
-            bearing = Float.POSITIVE_INFINITY
+            bearing = Float.NaN
         })
         shadowOf(Looper.getMainLooper()).idle()
         val publish = fake()!!.published.last { it.topic.contains("/loc/") }
