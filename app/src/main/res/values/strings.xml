@@ -40,6 +40,7 @@
     <string name="connected">Connected</string>
     <string name="waiting_gps">Waiting for GPS fix…</string>
     <string name="you_label">You (%1$s)</string>
+    <string name="you_hidden_label">You (Observer — hidden from others)</string>
     <string name="report_incident">Report incident</string>
     <string name="incidents">Incidents</string>
     <string name="no_incidents">No active incidents</string>

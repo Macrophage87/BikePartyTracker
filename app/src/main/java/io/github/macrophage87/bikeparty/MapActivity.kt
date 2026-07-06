@@ -167,7 +167,11 @@ class MapActivity : AppCompatActivity(), RideSession.Listener {
             }
             marker.position = point
             marker.icon = roleIcon(RideSession.currentRole, isSelf = true, stale = false)
-            marker.title = getString(R.string.you_label, RideSession.currentRole.label)
+            marker.title = if (RideSession.currentRole == RiderRole.OBSERVER) {
+                getString(R.string.you_hidden_label)
+            } else {
+                getString(R.string.you_label, RideSession.currentRole.label)
+            }
             if (!centeredOnce) {
                 centeredOnce = true
                 map.controller.setCenter(point)

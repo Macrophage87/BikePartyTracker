@@ -19,7 +19,10 @@ object MarkerFactory {
 
     fun riderMarker(context: Context, role: RiderRole, isSelf: Boolean, stale: Boolean): Drawable {
         val density = context.resources.displayMetrics.density
-        val size = (40 * density).toInt()
+        // Plain participants are a small generic dot; special roles get a
+        // bigger badge with their letter.
+        val showBadge = role != RiderRole.PARTICIPANT
+        val size = ((if (showBadge) 40 else 24) * density).toInt()
         val bmp = Bitmap.createBitmap(size, size, Bitmap.Config.ARGB_8888)
         val canvas = Canvas(bmp)
         val center = size / 2f
@@ -39,15 +42,17 @@ object MarkerFactory {
         }
         canvas.drawCircle(center, center, radius, ring)
 
-        val text = Paint(Paint.ANTI_ALIAS_FLAG).apply {
-            color = Color.WHITE
-            textSize = size * 0.42f
-            textAlign = Paint.Align.CENTER
-            typeface = Typeface.DEFAULT_BOLD
-            if (stale) alpha = 150
+        if (showBadge) {
+            val text = Paint(Paint.ANTI_ALIAS_FLAG).apply {
+                color = Color.WHITE
+                textSize = size * 0.42f
+                textAlign = Paint.Align.CENTER
+                typeface = Typeface.DEFAULT_BOLD
+                if (stale) alpha = 150
+            }
+            val baseline = center - (text.descent() + text.ascent()) / 2f
+            canvas.drawText(role.badge, center, baseline, text)
         }
-        val baseline = center - (text.descent() + text.ascent()) / 2f
-        canvas.drawText(role.badge, center, baseline, text)
 
         return BitmapDrawable(context.resources, bmp)
     }

@@ -150,14 +150,28 @@ object RideSession {
     /** Called by the foreground location service on every fix. */
     fun onOwnLocation(location: Location) {
         ownLocation = location
-        if (active && connected) publishLocation(location)
+        // Observers are never broadcast to the group.
+        if (active && connected && currentRole != RiderRole.OBSERVER) publishLocation(location)
         notifyListeners { it.onRidersChanged() }
     }
 
     fun setRole(role: RiderRole) {
         currentRole = role
-        ownLocation?.let { if (active && connected) publishLocation(it) }
+        if (role == RiderRole.OBSERVER) {
+            clearOwnRetainedLocation()
+        } else {
+            ownLocation?.let { if (active && connected) publishLocation(it) }
+        }
         notifyListeners { it.onRidersChanged() }
+    }
+
+    /** Removes our retained position so our marker disappears from everyone's map. */
+    private fun clearOwnRetainedLocation() {
+        val cfg = config ?: return
+        try {
+            transport?.publish("$topicRoot/loc/${cfg.riderId}", ByteArray(0), retain = true)
+        } catch (_: Exception) {
+        }
     }
 
     /** Leader only: broadcast (and retain) the route for the whole group. */
@@ -227,7 +241,9 @@ object RideSession {
 
     private fun publishPending() {
         pendingRoute?.let { (name, pts) -> publishRoute(name, pts) }
-        ownLocation?.let { publishLocation(it) }
+        if (currentRole != RiderRole.OBSERVER) {
+            ownLocation?.let { publishLocation(it) }
+        }
     }
 
     private fun publishLocation(location: Location) {
@@ -293,16 +309,23 @@ object RideSession {
                 sub.startsWith("loc/") -> {
                     val id = json.getString("id")
                     if (id == cfg.riderId) return
-                    riders[id] = RiderState(
-                        id = id,
-                        name = json.optString("n", "?"),
-                        role = RiderRole.fromId(json.optString("r")),
-                        lat = json.getDouble("la"),
-                        lon = json.getDouble("lo"),
-                        speedMps = json.optDouble("s", 0.0).toFloat(),
-                        headingDeg = json.optDouble("h", 0.0).toFloat(),
-                        updatedAt = System.currentTimeMillis()
-                    )
+                    val role = RiderRole.fromId(json.optString("r"))
+                    if (role == RiderRole.OBSERVER) {
+                        // Observers are hidden — drop any position we may still
+                        // have (e.g. from before they switched role).
+                        riders.remove(id)
+                    } else {
+                        riders[id] = RiderState(
+                            id = id,
+                            name = json.optString("n", "?"),
+                            role = role,
+                            lat = json.getDouble("la"),
+                            lon = json.getDouble("lo"),
+                            speedMps = json.optDouble("s", 0.0).toFloat(),
+                            headingDeg = json.optDouble("h", 0.0).toFloat(),
+                            updatedAt = System.currentTimeMillis()
+                        )
+                    }
                     notifyListeners { it.onRidersChanged() }
                 }
 

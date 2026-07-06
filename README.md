@@ -7,7 +7,7 @@ An Android app that lets everyone in a bike party / group ride see each other on
 - **Live location sharing, even when minimized.** A foreground service keeps publishing your position (every ~4 s) with the screen off or the app in the background.
 - **GPX route import.** The ride leader loads a GPX file; the route is drawn on the map.
 - **Leader-run rides with a password.** The leader picks a ride code, sets a password, and loads the route. The route is automatically shared with everyone who joins with that code + password.
-- **Ride roles with distinct map icons.** Each rider picks a role — *Lead line, Corker, Sweep, Soundbike, Participant, Observer* — shown as a color-coded badge on the map. Roles can be changed mid-ride.
+- **Ride roles with distinct map icons.** Each rider picks a role — *Lead line, Corker, Sweep, Soundbike, Participant, Observer* — shown as a color-coded badge on the map. Participants appear as a small generic dot; observers are never shown on (or broadcast to) the group's maps. Roles can be changed mid-ride.
 - **One-tap incident sharing.** First aid needed, emergency vehicle, detour required, mechanical, road hazard, stop & regroup. Incidents pin to the reporter's location, pop up as heads-up notifications for the whole group, and can be cleared by the reporter or the leader.
 
 ## How it works
