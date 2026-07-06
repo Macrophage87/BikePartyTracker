@@ -1,3 +1,5 @@
+import java.time.Duration
+
 plugins {
     id("com.android.application")
     id("org.jetbrains.kotlin.android")
@@ -72,5 +74,5 @@ dependencies {
 
 // A hung test JVM (leaked non-daemon threads) must fail loudly, not stall CI.
 tasks.withType<Test>().configureEach {
-    timeout.set(java.time.Duration.ofMinutes(20))
+    timeout.set(Duration.ofMinutes(20))
 }
