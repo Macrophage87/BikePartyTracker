@@ -5,6 +5,13 @@ import com.hivemq.client.mqtt.datatypes.MqttQos
 import com.hivemq.client.mqtt.mqtt3.Mqtt3AsyncClient
 import java.util.concurrent.TimeUnit
 
+/** Transport abstraction so tests can run the ride logic without networking. */
+interface RideTransport {
+    fun connect()
+    fun publish(topic: String, payload: ByteArray, retain: Boolean)
+    fun disconnect()
+}
+
 /**
  * Thin wrapper around the HiveMQ MQTT client. Reconnects automatically and
  * re-subscribes to the ride's topic tree on every (re)connect, so riders
@@ -18,7 +25,7 @@ class MqttTransport(
     private val subscribeFilter: String,
     private val onMessage: (topic: String, payload: ByteArray) -> Unit,
     private val onConnectionChanged: (connected: Boolean) -> Unit
-) {
+) : RideTransport {
 
     private val client: Mqtt3AsyncClient
 
@@ -42,7 +49,7 @@ class MqttTransport(
         client = builder.useMqttVersion3().buildAsync()
     }
 
-    fun connect() {
+    override fun connect() {
         client.connectWith()
             .cleanSession(true)
             .keepAlive(30)
@@ -58,7 +65,7 @@ class MqttTransport(
             .send()
     }
 
-    fun publish(topic: String, payload: ByteArray, retain: Boolean) {
+    override fun publish(topic: String, payload: ByteArray, retain: Boolean) {
         client.publishWith()
             .topic(topic)
             .payload(payload)
@@ -67,7 +74,7 @@ class MqttTransport(
             .send()
     }
 
-    fun disconnect() {
+    override fun disconnect() {
         try {
             client.disconnect()
         } catch (_: Exception) {

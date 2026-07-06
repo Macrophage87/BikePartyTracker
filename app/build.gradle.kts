@@ -69,3 +69,8 @@ dependencies {
     testImplementation("junit:junit:4.13.2")
     testImplementation("org.robolectric:robolectric:4.14.1")
 }
+
+// A hung test JVM (leaked non-daemon threads) must fail loudly, not stall CI.
+tasks.withType<Test>().configureEach {
+    timeout.set(java.time.Duration.ofMinutes(20))
+}

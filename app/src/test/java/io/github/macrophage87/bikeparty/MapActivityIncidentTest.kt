@@ -8,6 +8,7 @@ import io.github.macrophage87.bikeparty.model.RiderRole
 import io.github.macrophage87.bikeparty.ride.RideSession
 import org.junit.After
 import org.junit.Assert.assertNotNull
+import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.Robolectric
@@ -21,9 +22,15 @@ import org.robolectric.Shadows.shadowOf
 @RunWith(RobolectricTestRunner::class)
 class MapActivityIncidentTest {
 
+    @Before
+    fun setUp() {
+        FakeTransport.install()
+    }
+
     @After
     fun tearDown() {
         RideSession.stop()
+        FakeTransport.uninstall()
     }
 
     @Test
@@ -36,7 +43,7 @@ class MapActivityIncidentTest {
                 rideCode = "TEST42",
                 password = "pw",
                 isLeader = true,
-                brokerHost = "127.0.0.1",
+                brokerHost = "unused",
                 brokerPort = 1,
                 useTls = false
             ),

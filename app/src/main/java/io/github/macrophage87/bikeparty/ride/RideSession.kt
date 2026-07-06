@@ -74,8 +74,16 @@ object RideSession {
         private set
 
     private var crypto: CryptoBox? = null
-    private var transport: MqttTransport? = null
+    private var transport: RideTransport? = null
     private var topicRoot: String = ""
+
+    /** Test hook: replaces the real MQTT transport so tests never open sockets. */
+    @Volatile
+    internal var transportFactory: ((
+        subscribeFilter: String,
+        onMessage: (String, ByteArray) -> Unit,
+        onConnectionChanged: (Boolean) -> Unit
+    ) -> RideTransport)? = null
     private var pendingRoute: Pair<String?, List<RoutePoint>>? = null
 
     private val mainHandler = Handler(Looper.getMainLooper())
@@ -109,19 +117,21 @@ object RideSession {
         incidents.clear()
         active = true
 
-        transport = MqttTransport(
-            host = cfg.brokerHost,
-            port = cfg.brokerPort,
-            useTls = cfg.useTls,
-            clientId = "grt-" + UUID.randomUUID().toString().replace("-", "").take(20),
-            subscribeFilter = "$topicRoot/#",
-            onMessage = ::handleMessage,
-            onConnectionChanged = { isUp ->
-                connected = isUp
-                if (isUp) publishPending()
-                notifyListeners { it.onConnectionChanged(isUp) }
-            }
-        ).also { it.connect() }
+        val onConnection: (Boolean) -> Unit = { isUp ->
+            connected = isUp
+            if (isUp) publishPending()
+            notifyListeners { it.onConnectionChanged(isUp) }
+        }
+        transport = (transportFactory?.invoke("$topicRoot/#", ::handleMessage, onConnection)
+            ?: MqttTransport(
+                host = cfg.brokerHost,
+                port = cfg.brokerPort,
+                useTls = cfg.useTls,
+                clientId = "bpt-" + UUID.randomUUID().toString().replace("-", "").take(20),
+                subscribeFilter = "$topicRoot/#",
+                onMessage = ::handleMessage,
+                onConnectionChanged = onConnection
+            )).also { it.connect() }
     }
 
     fun stop() {
