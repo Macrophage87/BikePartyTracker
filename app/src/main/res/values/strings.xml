@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Bike Party Tracker</string>
+    <string name="main_tagline">See your whole group on one map — lead, cork, sweep, ride.</string>
+
+    <!-- Notification channels -->
+    <string name="channel_tracking">Ride tracking</string>
+    <string name="channel_incidents">Incident alerts</string>
+
+    <!-- Notifications -->
+    <string name="notif_sharing_title">Sharing your location with the ride</string>
+    <string name="notif_sharing_text">Ride %1$s — tap to open the map</string>
+    <string name="notif_incident_text">Reported by %1$s</string>
+
+    <!-- Main screen -->
+    <string name="your_name">Your name</string>
+    <string name="your_role">Your role</string>
+    <string name="ride_code">Ride code</string>
+    <string name="generate">New</string>
+    <string name="ride_password">Ride password</string>
+    <string name="leader_switch">I\'m the ride leader</string>
+    <string name="load_gpx">Load GPX route</string>
+    <string name="gpx_none">No route loaded (optional)</string>
+    <string name="gpx_loaded">%1$s (%2$d points)</string>
+    <string name="gpx_unnamed">Unnamed route</string>
+    <string name="gpx_empty">No track points found in that file</string>
+    <string name="gpx_error">Could not read that GPX file</string>
+    <string name="server_advanced">Server (advanced)</string>
+    <string name="broker_host">MQTT broker host</string>
+    <string name="broker_port">Port</string>
+    <string name="use_tls">Use TLS</string>
+    <string name="start_ride">Start / join ride</string>
+    <string name="return_ride">Return to active ride</string>
+    <string name="field_required">Required</string>
+    <string name="location_permission_needed">Location permission is required to share your position with the group</string>
+
+    <!-- Map screen -->
+    <string name="ride_code_title">Ride %1$s</string>
+    <string name="connecting">Connecting…</string>
+    <string name="connected">Connected</string>
+    <string name="waiting_gps">Waiting for GPS fix…</string>
+    <string name="you_label">You (%1$s)</string>
+    <string name="report_incident">Report incident</string>
+    <string name="incidents">Incidents</string>
+    <string name="no_incidents">No active incidents</string>
+    <string name="incident_shared">Shared: %1$s</string>
+    <string name="show_on_map">Show on map</string>
+    <string name="clear_incident">Clear incident</string>
+    <string name="role">Role</string>
+    <string name="leave_ride">Leave ride</string>
+    <string name="leave_confirm">Stop sharing your location and leave this ride?</string>
+    <string name="leave">Leave</string>
+    <string name="cancel">Cancel</string>
+    <string name="center_on_me">Center on my position</string>
+</resources>
