@@ -36,6 +36,8 @@ class MainActivity : AppCompatActivity() {
     private lateinit var switchLeader: SwitchMaterial
     private lateinit var rowGpx: View
     private lateinit var tvGpx: TextView
+    private lateinit var switchAdvanced: SwitchMaterial
+    private lateinit var sectionServer: View
     private lateinit var etBrokerHost: TextInputEditText
     private lateinit var etBrokerPort: TextInputEditText
     private lateinit var switchTls: SwitchMaterial
@@ -70,6 +72,8 @@ class MainActivity : AppCompatActivity() {
         switchLeader = findViewById(R.id.switch_leader)
         rowGpx = findViewById(R.id.row_gpx)
         tvGpx = findViewById(R.id.tv_gpx)
+        switchAdvanced = findViewById(R.id.switch_advanced)
+        sectionServer = findViewById(R.id.section_server)
         etBrokerHost = findViewById(R.id.et_broker_host)
         etBrokerPort = findViewById(R.id.et_broker_port)
         switchTls = findViewById(R.id.switch_tls)
@@ -84,6 +88,17 @@ class MainActivity : AppCompatActivity() {
         etBrokerHost.setText(prefs.getString(PREF_BROKER_HOST, DEFAULT_BROKER_HOST))
         etBrokerPort.setText(prefs.getInt(PREF_BROKER_PORT, DEFAULT_BROKER_PORT).toString())
         switchTls.isChecked = prefs.getBoolean(PREF_BROKER_TLS, true)
+
+        // Keep the server section visible if the user has customized it before.
+        val serverCustomized =
+            prefs.getString(PREF_BROKER_HOST, DEFAULT_BROKER_HOST) != DEFAULT_BROKER_HOST ||
+                prefs.getInt(PREF_BROKER_PORT, DEFAULT_BROKER_PORT) != DEFAULT_BROKER_PORT ||
+                !prefs.getBoolean(PREF_BROKER_TLS, true)
+        switchAdvanced.isChecked = serverCustomized
+        sectionServer.visibility = if (serverCustomized) View.VISIBLE else View.GONE
+        switchAdvanced.setOnCheckedChangeListener { _, checked ->
+            sectionServer.visibility = if (checked) View.VISIBLE else View.GONE
+        }
 
         switchLeader.setOnCheckedChangeListener { _, checked ->
             rowGpx.visibility = if (checked) View.VISIBLE else View.GONE
