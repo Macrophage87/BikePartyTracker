@@ -53,4 +53,9 @@
     <string name="leave">Leave</string>
     <string name="cancel">Cancel</string>
     <string name="center_on_me">Center on my position</string>
+
+    <!-- Crash reporting -->
+    <string name="crash_title">The app crashed last time</string>
+    <string name="crash_share">Share report</string>
+    <string name="crash_dismiss">Dismiss</string>
 </resources>

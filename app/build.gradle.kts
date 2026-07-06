@@ -41,6 +41,12 @@ android {
             "META-INF/DEPENDENCIES"
         )
     }
+
+    testOptions {
+        unitTests {
+            isIncludeAndroidResources = true
+        }
+    }
 }
 
 dependencies {
@@ -59,4 +65,7 @@ dependencies {
 
     // MQTT transport for group sync
     implementation("com.hivemq:hivemq-mqtt-client:1.3.3")
+
+    testImplementation("junit:junit:4.13.2")
+    testImplementation("org.robolectric:robolectric:4.14.1")
 }

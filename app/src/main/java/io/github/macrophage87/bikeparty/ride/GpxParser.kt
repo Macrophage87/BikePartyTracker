@@ -30,8 +30,11 @@ object GpxParser {
             if (event == XmlPullParser.START_TAG) {
                 when (parser.name) {
                     "trkpt", "rtept" -> {
-                        val lat = parser.getAttributeValue(null, "lat")?.toDoubleOrNull()
-                        val lon = parser.getAttributeValue(null, "lon")?.toDoubleOrNull()
+                        // toDoubleOrNull accepts "NaN"/"Infinity"; keep finite coords only.
+                        val lat = parser.getAttributeValue(null, "lat")
+                            ?.toDoubleOrNull()?.takeIf { it.isFinite() }
+                        val lon = parser.getAttributeValue(null, "lon")
+                            ?.toDoubleOrNull()?.takeIf { it.isFinite() }
                         if (lat != null && lon != null) points.add(RoutePoint(lat, lon))
                     }
                     "name" -> if (name == null) {

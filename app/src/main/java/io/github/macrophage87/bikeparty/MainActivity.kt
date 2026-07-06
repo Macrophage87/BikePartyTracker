@@ -13,6 +13,7 @@ import android.widget.TextView
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.switchmaterial.SwitchMaterial
 import com.google.android.material.textfield.MaterialAutoCompleteTextView
@@ -119,6 +120,31 @@ class MainActivity : AppCompatActivity() {
     override fun onResume() {
         super.onResume()
         btnReturn.visibility = if (RideSession.active) View.VISIBLE else View.GONE
+        maybeShowCrashReport()
+    }
+
+    /** If the app crashed last time, offer the saved stack trace for sharing. */
+    private fun maybeShowCrashReport() {
+        val file = BikePartyApp.crashFile(application)
+        if (!file.exists()) return
+        val report = try {
+            file.readText()
+        } catch (_: Exception) {
+            return
+        }
+        MaterialAlertDialogBuilder(this)
+            .setTitle(R.string.crash_title)
+            .setMessage(report)
+            .setPositiveButton(R.string.crash_share) { _, _ ->
+                val send = Intent(Intent.ACTION_SEND)
+                    .setType("text/plain")
+                    .putExtra(Intent.EXTRA_SUBJECT, getString(R.string.crash_title))
+                    .putExtra(Intent.EXTRA_TEXT, report)
+                startActivity(Intent.createChooser(send, getString(R.string.crash_share)))
+                file.delete()
+            }
+            .setNegativeButton(R.string.crash_dismiss) { _, _ -> file.delete() }
+            .show()
     }
 
     private fun onStartClicked() {

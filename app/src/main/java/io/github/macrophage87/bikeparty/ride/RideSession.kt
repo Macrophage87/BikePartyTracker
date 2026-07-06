@@ -198,6 +198,8 @@ object RideSession {
     fun reportIncident(type: IncidentType, note: String?): Incident? {
         val cfg = config ?: return null
         val loc = ownLocation ?: return null
+        // Some providers emit non-finite values; JSONObject.put(double) throws on them.
+        if (!loc.latitude.isFinite() || !loc.longitude.isFinite()) return null
         val id = UUID.randomUUID().toString().take(8)
         val incident = Incident(
             id = id,
@@ -248,14 +250,17 @@ object RideSession {
 
     private fun publishLocation(location: Location) {
         val cfg = config ?: return
+        if (!location.latitude.isFinite() || !location.longitude.isFinite()) return
+        val speed = location.speed.toDouble().takeIf { it.isFinite() } ?: 0.0
+        val bearing = location.bearing.toDouble().takeIf { it.isFinite() } ?: 0.0
         val json = JSONObject()
             .put("id", cfg.riderId)
             .put("n", cfg.riderName)
             .put("r", currentRole.id)
             .put("la", location.latitude)
             .put("lo", location.longitude)
-            .put("s", location.speed.toDouble())
-            .put("h", location.bearing.toDouble())
+            .put("s", speed)
+            .put("h", bearing)
             .put("ts", System.currentTimeMillis())
         encryptAndPublish("$topicRoot/loc/${cfg.riderId}", json, retain = true)
     }
