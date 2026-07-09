@@ -4,6 +4,7 @@ import android.graphics.drawable.Drawable
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
+import android.view.WindowManager
 import android.widget.Button
 import androidx.appcompat.app.AppCompatActivity
 import com.google.android.material.appbar.MaterialToolbar
@@ -49,6 +50,9 @@ class MapActivity : AppCompatActivity(), RideSession.Listener {
             finish()
             return
         }
+        // Riders glance at the map constantly — keep the screen on while
+        // this screen is in the foreground (cleared automatically otherwise).
+        window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
         setContentView(R.layout.activity_map)
 
         map = findViewById(R.id.map)
